@@ -1,7 +1,7 @@
 const express = require("express");
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
-
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -21,6 +21,8 @@ async function run() {
         const database = client.db('carget');
         const productsCollection = database.collection('products');
         const usersCollection = database.collection('users');
+        const ordersCollection = database.collection('orders');
+        const reviewsCollection = database.collection('reviews');
 
         //posting addProducts
         app.post('/products', async (req, res) => {
@@ -28,6 +30,92 @@ async function run() {
             const result = await productsCollection.insertOne(product);
             res.json(result);
         });
+
+        //get addProducts
+        app.get('/products', async (req, res) => {
+            const cursor = productsCollection.find({});
+            const products = await cursor.toArray();
+            res.json(products);
+        })
+
+        //delete addProducts
+        app.delete('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productsCollection.deleteOne(query);
+            res.json(result);
+        })
+
+
+        //get selected product to place order
+        app.get('/selectedproduct/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const product = await productsCollection.findOne(query);
+            res.json(product);
+        })
+
+        //post/confirm/place that selected order
+        app.post('/placeOrders', async (req, res) => {
+            const orderDetails = req.body;
+            const result = await ordersCollection.insertOne(orderDetails);
+            res.json(result);
+        })
+
+        //get or load my orders
+
+        app.get('/orders', async (req, res) => {
+            const cursor = ordersCollection.find({});
+            const orders = await cursor.toArray();
+            res.json(orders);
+        })
+
+        //get selected orders
+        app.get('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const orders = await ordersCollection.findOne(query);
+            res.json(orders);
+        })
+
+        //delete orders
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await ordersCollection.deleteOne(query);
+            res.json(result);
+        })
+
+        //status update
+        app.put('/updateStatus/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedStatus = req.body.status;
+            const filter = { _id: ObjectId(id) };
+            const result = await ordersCollection.updateOne(filter, {
+                $set: { status: updatedStatus },
+            });
+            res.json(result);
+        })
+
+        //post review
+        app.post('/reviews', async (req, res) => {
+            const review = req.body;
+            const result = await reviewsCollection.insertOne(review);
+            res.json(result);
+        })
+
+        //load or get reviews
+        app.get('/reviews', async (req, res) => {
+            const cursor = reviewsCollection.find({});
+            const reviews = await cursor.toArray();
+            res.json(reviews);
+        })
+
+
+
+
+        //---------------------Authentication-----------------------//
+
 
         //getting users info to differnciate admin and user
         app.get('/users/:email', async (req, res) => {
