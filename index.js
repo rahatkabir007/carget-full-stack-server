@@ -28,14 +28,14 @@ async function run() {
         app.post('/products', async (req, res) => {
             const product = req.body;
             const result = await productsCollection.insertOne(product);
-            res.send(result);
+            res.json(result);
         });
 
         //get addProducts
         app.get('/products', async (req, res) => {
             const cursor = productsCollection.find({});
             const products = await cursor.toArray();
-            res.send(products);
+            res.json(products);
         })
 
         //delete addProducts
@@ -43,7 +43,7 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await productsCollection.deleteOne(query);
-            res.send(result);
+            res.json(result);
         })
 
 
@@ -52,14 +52,14 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const product = await productsCollection.findOne(query);
-            res.send(product);
+            res.json(product);
         })
 
         //post/confirm/place that selected order
         app.post('/placeOrders', async (req, res) => {
             const orderDetails = req.body;
             const result = await ordersCollection.insertOne(orderDetails);
-            res.send(result);
+            res.json(result);
         })
 
         //get or load my orders
@@ -67,7 +67,7 @@ async function run() {
         app.get('/orders', async (req, res) => {
             const cursor = ordersCollection.find({});
             const orders = await cursor.toArray();
-            res.send(orders);
+            res.json(orders);
         })
 
         //get selected orders
@@ -75,7 +75,7 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const orders = await ordersCollection.findOne(query);
-            res.send(orders);
+            res.json(orders);
         })
 
         //delete orders
@@ -83,7 +83,7 @@ async function run() {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await ordersCollection.deleteOne(query);
-            res.send(result);
+            res.json(result);
         })
 
         //status update
@@ -94,21 +94,21 @@ async function run() {
             const result = await ordersCollection.updateOne(filter, {
                 $set: { status: updatedStatus },
             });
-            res.send(result);
+            res.json(result);
         })
 
         //post review
         app.post('/reviews', async (req, res) => {
             const review = req.body;
             const result = await reviewsCollection.insertOne(review);
-            res.send(result);
+            res.json(result);
         })
 
         //load or get reviews
         app.get('/reviews', async (req, res) => {
             const cursor = reviewsCollection.find({});
             const reviews = await cursor.toArray();
-            res.send(reviews);
+            res.json(reviews);
         })
 
 
@@ -126,14 +126,14 @@ async function run() {
             if (user?.role === 'admin') {
                 isAdmin = true;
             }
-            res.send({ admin: isAdmin });
+            res.json({ admin: isAdmin });
         })
 
         //send users to database
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user);
-            res.send(result);
+            res.json(result);
         })
 
         //for sending new google login user to database
@@ -145,7 +145,7 @@ async function run() {
                 $set: user
             }
             const result = await usersCollection.updateOne(filter, updateDoc, options);
-            res.send(result);
+            res.json(result);
         })
 
         //make admin[we can do status pending like this]
@@ -156,7 +156,7 @@ async function run() {
                 $set: { role: 'admin' }
             };
             const result = await usersCollection.updateOne(filter, updateDoc);
-            res.send(result);
+            res.json(result);
         })
 
     }
@@ -167,7 +167,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send("Carget Server Is Running")
+    res.json("Carget Server Is Running")
 })
 
 app.listen(port, () => {
