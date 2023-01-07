@@ -173,3 +173,5 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log("Carget Server Is Running at Port", port);
 })
+
+module.exports = app;
